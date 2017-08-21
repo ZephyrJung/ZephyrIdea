@@ -42,7 +42,7 @@ public class CountLinesAction extends TextComponentEditorAction {
                 endLine = doc.getLineCount() - 1;
             }
 
-            if (startLine < endLine) {
+            if (startLine <= endLine) {
                 String message = String.format("%d lines are selected!", endLine - startLine + 1);
                 Messages.showInfoMessage(message, "Count Result");
             }
