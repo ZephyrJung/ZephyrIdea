@@ -39,7 +39,7 @@
               description="Count selected lines or whole file if selection is empty">
         <keyboard-shortcut keymap="$default" first-keystroke="alt shift l"/>
       </action>
-      <add-to-group group-id="EditMenu" anchor="last"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </group>
   </actions>
 

@@ -4,16 +4,10 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.actionSystem.EditorWriteActionHandler;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.editor.actions.TextComponentEditorAction;
-import com.intellij.openapi.ui.DialogWrapper;
-import org.jdesktop.swingx.sort.SortUtils;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Dumb action to perform sort
@@ -22,12 +16,15 @@ import java.util.List;
  * @version $Id$
  */
 public class CountLinesAction extends TextComponentEditorAction {
+
     protected CountLinesAction() {
         super(new Handler());
     }
 
-    private static class Handler extends EditorWriteActionHandler {
-        public void executeWriteAction(Editor editor, @Nullable Caret caret, DataContext dataContext) {
+    private static class Handler extends EditorActionHandler {
+
+        @Override
+        public void doExecute(Editor editor, @Nullable Caret caret, DataContext dataContext) {
             final Document doc = editor.getDocument();
 
             int startLine;
@@ -45,45 +42,11 @@ public class CountLinesAction extends TextComponentEditorAction {
                 endLine = doc.getLineCount() - 1;
             }
 
-            // Ignore last lines (usually one) which are only '\n'
-            endLine = ignoreLastEmptyLines(doc, endLine);
-
-            if (startLine >= endLine) {
-                return;
+            if (startLine < endLine) {
+                String message = String.format("%d lines are selected!", endLine - startLine + 1);
+                Messages.showInfoMessage(message, "Count Result");
             }
 
-            CountLineDialog countLineDialog = new CountLineDialog(endLine - startLine + 1 + "");
-            countLineDialog.show();
         }
-
-        private int ignoreLastEmptyLines(Document doc, int endLine) {
-            while (endLine >= 0) {
-                if (doc.getLineEndOffset(endLine) > doc.getLineStartOffset(endLine)) {
-                    return endLine;
-                }
-
-                endLine--;
-            }
-
-            return -1;
-        }
-    }
-}
-
-class CountLineDialog extends DialogWrapper {
-    private String text;
-
-    public CountLineDialog(String text) {
-        super(false);
-        this.text = text;
-        init();
-    }
-
-    @Nullable
-    protected JComponent createCenterPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(new JTextArea(this.text));
-        return panel;
     }
 }
