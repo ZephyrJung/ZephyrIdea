@@ -1,17 +1,14 @@
 <idea-plugin>
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>org.b3log.zephyr.count_lines</id>
+  <name>Zephyr Utils</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="zephyrjung@126.com" url="http://zephyr.b3log.org">Zephyr Cheung</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      This is a utils integration for usually work, simple tools<br>
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
     ]]>
   </change-notes>
 
@@ -31,13 +28,12 @@
   <depends>com.intellij.modules.lang</depends>
 
   <actions>
-    <group id="linessorter.sort.group">
+    <group id="editor.lines.group">
       <separator/>
-      <action id="linessorter.sort"
+      <action id="lines.count"
               class="org.b3log.zephyr.CountLinesAction"
               text="Count Lines"
               description="Count selected lines or whole file if selection is empty">
-        <keyboard-shortcut keymap="$default" first-keystroke="alt shift l"/>
       </action>
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </group>
