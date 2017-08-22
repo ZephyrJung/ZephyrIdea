@@ -1,5 +1,5 @@
 <idea-plugin>
-  <id>org.b3log.zephyr.count_lines</id>
+  <id>org.b3log.zephyr</id>
   <name>Zephyr Utils</name>
   <version>1.0</version>
   <vendor email="zephyrjung@126.com" url="http://zephyr.b3log.org">Zephyr Cheung</vendor>
