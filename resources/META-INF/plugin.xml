@@ -44,13 +44,6 @@
       </action>
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </group>
-    <action class="org.b3log.zephyr.action.MultiHighlightAction" id="MultiHighlight"
-            text="MultiHighlight"
-            description="MultiHighlight Usage">
-      <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta QUOTE"/>
-      <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta QUOTE"/>
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl QUOTE"/>
-    </action>
   </actions>
 
 </idea-plugin>

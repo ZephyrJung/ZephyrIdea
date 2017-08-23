@@ -7,11 +7,12 @@ import java.util.regex.Pattern;
  */
 public class Temp {
     public static void main(String[] args) {
-        String test = "la2jsdf;lajs d1fa;sl@df!ja;sdfj;AsDjf";
+        String test = "2a2b2Abc";
         String upperCase = test.replaceAll("[^A-Z]","");
         for (char anUpperCase : upperCase.toCharArray()) {
-            test = test.replaceFirst(String.valueOf(anUpperCase), " " + anUpperCase);
+            test = test.replaceFirst(String.valueOf(anUpperCase), "0" + anUpperCase);
         }
+        test = test.replaceAll("[^a-zA-Z0]","1");
         for (String temp : test.split("[^a-zA-Z]")) {
             System.out.println(temp);
         }

@@ -1,9 +1,7 @@
 package org.b3log.zephyr.action;
 
 import com.intellij.codeInsight.highlighting.HighlightManager;
-import com.intellij.codeInsight.highlighting.HighlightManagerImpl;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -13,17 +11,15 @@ import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.spellchecker.dictionary.ProjectDictionary;
-import com.intellij.spellchecker.state.ProjectDictionaryState;
 import org.apache.commons.lang.StringUtils;
 import org.b3log.zephyr.highlight.TextAttributesFactory;
 import org.b3log.zephyr.model.Range;
-import org.b3log.zephyr.model.Word;
-import org.jetbrains.annotations.NotNull;
+import org.b3log.zephyr.model.WordRanges;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 行级代码着色
@@ -43,15 +39,18 @@ public class HighlightAction extends TextComponentEditorAction {
         @Override
         public void doExecute(Editor editor, @Nullable Caret caret, DataContext dataContext) {
             try {
-                final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
-                final TextAttributes ta = TextAttributesFactory.getInstance().get();
                 final Document doc = editor.getDocument();
                 for (int line = 0; line < doc.getLineCount(); line++) {
                     String text = doc.getText(new TextRange(doc.getLineStartOffset(line), doc.getLineEndOffset(line)));
-                    List<Range> ranges = getRangeList(text,doc.getLineStartOffset(line));
+                    List<WordRanges> wordRangesList = getWordRangesList(text, doc.getLineStartOffset(line));
                     if (StringUtils.isNotBlank(text)) {
-                        for(Range range : ranges){
-                            highlightManager.addRangeHighlight(editor, range.getStart(), range.getEnd(), ta, true, null);
+                        for (WordRanges wordRanges : wordRangesList) {
+                            final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
+                            final TextAttributes ta = TextAttributesFactory.getInstance().get();
+                            for (Range range : wordRanges.getRangeList()) {
+                                highlightManager.addRangeHighlight(editor, range.getStart(), range.getEnd(),
+                                        ta, true, null);
+                            }
                         }
                     }
                 }
@@ -60,29 +59,52 @@ public class HighlightAction extends TextComponentEditorAction {
             }
         }
 
-        private List<Range> getRangeList(final String text,final int lineStart) {
+        private List<WordRanges> getWordRangesList(final String text, final int lineStart) {
             String backup = text;
-            String backup2 = text;
-            List<Range> rangeList = new ArrayList<>();
+            String backup2 = text.toLowerCase();
+            List<WordRanges> wordRangesList = new ArrayList<>();
             //字符串拆分，非字母，大小写
             String upperCase = text.replaceAll("[^A-Z]", "");
             //在每个大写字母之前添加一个空格
             for (char upper : upperCase.toCharArray()) {
-                backup = backup.replaceFirst(String.valueOf(upper), " " + upper);
+                backup = backup.replaceFirst(String.valueOf(upper), "0" + upper);
             }
+            backup = backup.replaceAll("[^a-zA-Z0]", "1");
+
             //根据非字母正则匹配分割字符串
-            for (String temp : backup.split("[^a-zA-Z]")) {
-                if (StringUtils.isNotBlank(temp) && backup2.indexOf(temp)!=backup2.lastIndexOf(temp)) {
-                    while(backup2.contains(temp)){
+            String[] words = backup.split("[1|0]");
+            for (String temp : words) {
+                temp = temp.toLowerCase();
+                WordRanges wordRanges = new WordRanges();
+                if (StringUtils.isNotBlank(temp) && countWords(temp, words) > 1) {
+                    List<Range> rangeList = new ArrayList<>();
+                    while (backup2.contains(temp)) {
                         Range range = new Range();
-                        range.setStart(text.indexOf(temp)+lineStart);
-                        range.setEnd(text.indexOf(temp)+temp.length()+lineStart);
-                        backup2 = backup2.replaceFirst(temp,"~");
+                        range.setStart(backup2.indexOf(temp) + lineStart);
+                        range.setEnd(backup2.indexOf(temp) + temp.length() + lineStart);
+                        backup2 = backup2.replaceFirst(temp, generateMask(temp));
                         rangeList.add(range);
                     }
+                    wordRanges.setWord(temp);
+                    wordRanges.setRangeList(rangeList);
+                    wordRangesList.add(wordRanges);
                 }
             }
-            return rangeList;
+            return wordRangesList;
+        }
+
+        private int countWords(String word, String[] words) {
+            int count = 0;
+            for (String temp : words) {
+                if (temp.equalsIgnoreCase(word)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        private String generateMask(String text) {
+            return text.replaceAll("[a-zA-Z]", "*");
         }
     }
 }
