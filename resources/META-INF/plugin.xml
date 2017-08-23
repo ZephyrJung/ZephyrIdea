@@ -20,23 +20,32 @@
   <!-- uncomment to enable plugin in all products
   <depends>com.intellij.modules.lang</depends>
   -->
+  <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <applicationService
+            serviceImplementation="org.b3log.zephyr.config.MultiHighlightConfig"/>
+    <applicationConfigurable instance="org.b3log.zephyr.ui.MultiHighlightConfigPanel"/>
   </extensions>
 
-  <depends>com.intellij.modules.lang</depends>
 
   <actions>
     <group id="editor.lines.group">
       <separator/>
       <action id="lines.count"
-              class="org.b3log.zephyr.CountLinesAction"
+              class="org.b3log.zephyr.action.CountLinesAction"
               text="Count Lines"
               description="Count selected lines or whole file if selection is empty">
       </action>
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </group>
+    <action class="org.b3log.zephyr.action.MultiHighlightAction" id="MultiHighlight"
+            text="MultiHighlight"
+            description="MultiHighlight Usage">
+      <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta QUOTE"/>
+      <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta QUOTE"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl QUOTE"/>
+    </action>
   </actions>
 
 </idea-plugin>

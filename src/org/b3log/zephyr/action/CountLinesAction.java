@@ -1,4 +1,4 @@
-package org.b3log.zephyr;
+package org.b3log.zephyr.action;
 
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Caret;
