@@ -23,9 +23,7 @@
   <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService
-            serviceImplementation="org.b3log.zephyr.config.MultiHighlightConfig"/>
-    <applicationConfigurable instance="org.b3log.zephyr.ui.MultiHighlightConfigPanel"/>
+
   </extensions>
 
 

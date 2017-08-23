@@ -7,19 +7,18 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.editor.actions.TextComponentEditorAction;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.EffectType;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import org.apache.commons.lang.StringUtils;
-import org.b3log.zephyr.highlight.TextAttributesFactory;
 import org.b3log.zephyr.model.Range;
 import org.b3log.zephyr.model.WordRanges;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 行级代码着色
@@ -46,7 +45,9 @@ public class HighlightAction extends TextComponentEditorAction {
                     if (StringUtils.isNotBlank(text)) {
                         for (WordRanges wordRanges : wordRangesList) {
                             final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
-                            final TextAttributes ta = TextAttributesFactory.getInstance().get();
+                            final TextAttributes ta = new TextAttributes();
+                            ta.setForegroundColor(Color.RED);
+                            ta.setBackgroundColor(Color.YELLOW);
                             for (Range range : wordRanges.getRangeList()) {
                                 highlightManager.addRangeHighlight(editor, range.getStart(), range.getEnd(),
                                         ta, true, null);
