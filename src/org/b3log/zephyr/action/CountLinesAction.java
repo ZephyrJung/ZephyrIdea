@@ -10,7 +10,7 @@ import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Dumb action to perform sort
+ * 计算选中行数
  *
  * @author <a href="mailto:zephyrjung@126.com">Zephyr Cheung</a>
  * @version $Id$
