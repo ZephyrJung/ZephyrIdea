@@ -13,6 +13,6 @@ Build菜单下有个Prepare Plugin Mode 'XXX' For Deployment，即可生成jar�
 > 可能在原项目上做了轻微的改动，也可能是照着原项目的思路进行重做
 > 感谢原作大神们的开源精神！
 
-功能1 参考：[LinesSorter](https://github.com/syllant/idea-plugin-linessorter)
-功能2 参考：[MultiHighlight](https://github.com/huoguangjin/MultiHighlight)
+- 功能1 参考：[LinesSorter](https://github.com/syllant/idea-plugin-linessorter)
+- 功能2 参考：[MultiHighlight](https://github.com/huoguangjin/MultiHighlight)
 
