@@ -40,30 +40,41 @@ public class HighlightAction extends TextComponentEditorAction {
         public void doExecute(Editor editor, @Nullable Caret caret, DataContext dataContext) {
             try {
                 final Document doc = editor.getDocument();
-                for (int line = 0; line < doc.getLineCount(); line++) {
-                    String text = doc.getText(new TextRange(doc.getLineStartOffset(line), doc.getLineEndOffset(line)));
-                    List<WordRanges> wordRangesList = getWordRangesList(text, doc.getLineStartOffset(line));
-                    List<MarkColor> markColorList = new ArrayList<>();
-                    markColorList.add(new MarkColor(Color.BLACK, Color.GREEN));
-                    markColorList.add(new MarkColor(Color.BLACK, Color.CYAN));
-                    markColorList.add(new MarkColor(Color.BLACK, Color.YELLOW));
-                    markColorList.add(new MarkColor(Color.BLACK, Color.PINK));
-                    markColorList.add(new MarkColor(Color.BLACK, Color.RED));
-                    if (StringUtils.isNotBlank(text)) {
-                        for (int i = 0; i < wordRangesList.size(); i++) {
-                            final TextAttributes ta = new TextAttributes();
-                            final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
-                            ta.setForegroundColor(markColorList.get(i % markColorList.size()).getForegroundColor());
-                            ta.setBackgroundColor(markColorList.get(i % markColorList.size()).getBackgroundColor());
-                            for (Range range : wordRangesList.get(i).getRangeList()) {
-                                highlightManager.addRangeHighlight(editor, range.getStart(), range.getEnd(),
-                                        ta, true, null);
-                            }
-                        }
-                    }
+                boolean hasSelection = editor.getSelectionModel().hasSelection();
+                if (hasSelection) {
+                    int startLine = doc.getLineNumber(editor.getSelectionModel().getSelectionStart());
+                    int endLine = doc.getLineNumber(editor.getSelectionModel().getSelectionEnd());
+                    highlightHandler(editor,startLine,endLine);
+                } else {
+                    highlightHandler(editor, 0, editor.getDocument().getLineCount()-1);
                 }
             } catch (Exception e) {
                 Messages.showErrorDialog("发生了未知错误", "错误");
+            }
+        }
+
+        private void highlightHandler(Editor editor, int startLine, int endLine) {
+            for (int line = startLine; line <= endLine; line++) {
+                String text = editor.getDocument().getText(new TextRange(editor.getDocument().getLineStartOffset(line), editor.getDocument().getLineEndOffset(line)));
+                List<WordRanges> wordRangesList = getWordRangesList(text, editor.getDocument().getLineStartOffset(line));
+                List<MarkColor> markColorList = new ArrayList<>();
+                markColorList.add(new MarkColor(Color.BLACK, Color.GREEN));
+                markColorList.add(new MarkColor(Color.BLACK, Color.CYAN));
+                markColorList.add(new MarkColor(Color.BLACK, Color.YELLOW));
+                markColorList.add(new MarkColor(Color.BLACK, Color.PINK));
+                markColorList.add(new MarkColor(Color.BLACK, Color.RED));
+                if (StringUtils.isNotBlank(text)) {
+                    for (int i = 0; i < wordRangesList.size(); i++) {
+                        final TextAttributes ta = new TextAttributes();
+                        final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
+                        ta.setForegroundColor(markColorList.get(i % markColorList.size()).getForegroundColor());
+                        ta.setBackgroundColor(markColorList.get(i % markColorList.size()).getBackgroundColor());
+                        for (Range range : wordRangesList.get(i).getRangeList()) {
+                            highlightManager.addRangeHighlight(editor, range.getStart(), range.getEnd(),
+                                    ta, true, null);
+                        }
+                    }
+                }
             }
         }
 
@@ -106,16 +117,6 @@ public class HighlightAction extends TextComponentEditorAction {
             int count = 0;
             for (String temp : words) {
                 if (temp.equalsIgnoreCase(word)) {
-                    count++;
-                }
-            }
-            return count;
-        }
-
-        private int countChars(char c, Character[] charList) {
-            int count = 0;
-            for (char temp : charList) {
-                if (temp == c) {
                     count++;
                 }
             }
