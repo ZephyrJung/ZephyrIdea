@@ -7,11 +7,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.editor.actions.TextComponentEditorAction;
-import com.intellij.openapi.editor.markup.EffectType;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import org.apache.commons.lang.StringUtils;
+import org.b3log.zephyr.model.MarkColor;
 import org.b3log.zephyr.model.Range;
 import org.b3log.zephyr.model.WordRanges;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 行级代码着色
@@ -42,13 +43,19 @@ public class HighlightAction extends TextComponentEditorAction {
                 for (int line = 0; line < doc.getLineCount(); line++) {
                     String text = doc.getText(new TextRange(doc.getLineStartOffset(line), doc.getLineEndOffset(line)));
                     List<WordRanges> wordRangesList = getWordRangesList(text, doc.getLineStartOffset(line));
+                    List<MarkColor> markColorList = new ArrayList<>();
+                    markColorList.add(new MarkColor(Color.BLACK, Color.GREEN));
+                    markColorList.add(new MarkColor(Color.BLACK, Color.CYAN));
+                    markColorList.add(new MarkColor(Color.BLACK, Color.YELLOW));
+                    markColorList.add(new MarkColor(Color.BLACK, Color.PINK));
+                    markColorList.add(new MarkColor(Color.BLACK, Color.RED));
                     if (StringUtils.isNotBlank(text)) {
-                        for (WordRanges wordRanges : wordRangesList) {
-                            final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
+                        for (int i = 0; i < wordRangesList.size(); i++) {
                             final TextAttributes ta = new TextAttributes();
-                            ta.setForegroundColor(Color.RED);
-                            ta.setBackgroundColor(Color.YELLOW);
-                            for (Range range : wordRanges.getRangeList()) {
+                            final HighlightManager highlightManager = HighlightManager.getInstance(editor.getProject());
+                            ta.setForegroundColor(markColorList.get(i % markColorList.size()).getForegroundColor());
+                            ta.setBackgroundColor(markColorList.get(i % markColorList.size()).getBackgroundColor());
+                            for (Range range : wordRangesList.get(i).getRangeList()) {
                                 highlightManager.addRangeHighlight(editor, range.getStart(), range.getEnd(),
                                         ta, true, null);
                             }
@@ -68,7 +75,7 @@ public class HighlightAction extends TextComponentEditorAction {
             String upperCase = text.replaceAll("[^A-Z]", "");
             //在每个大写字母之前添加一个空格
             for (char upper : upperCase.toCharArray()) {
-                backup = backup.replaceFirst(String.valueOf(upper), "0" + upper);
+                backup = backup.replaceAll(String.valueOf(upper), "0" + upper);
             }
             backup = backup.replaceAll("[^a-zA-Z0]", "1");
 
@@ -77,7 +84,8 @@ public class HighlightAction extends TextComponentEditorAction {
             for (String temp : words) {
                 temp = temp.toLowerCase();
                 WordRanges wordRanges = new WordRanges();
-                if (StringUtils.isNotBlank(temp) && countWords(temp, words) > 1) {
+                if (StringUtils.isNotBlank(temp) && countWords(temp, words) > 1
+                        && !wordRangesList.stream().map(WordRanges::getWord).collect(Collectors.toList()).contains(temp)) {
                     List<Range> rangeList = new ArrayList<>();
                     while (backup2.contains(temp)) {
                         Range range = new Range();
@@ -98,6 +106,16 @@ public class HighlightAction extends TextComponentEditorAction {
             int count = 0;
             for (String temp : words) {
                 if (temp.equalsIgnoreCase(word)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        private int countChars(char c, Character[] charList) {
+            int count = 0;
+            for (char temp : charList) {
+                if (temp == c) {
                     count++;
                 }
             }
