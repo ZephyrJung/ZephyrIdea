@@ -44,9 +44,9 @@ public class HighlightAction extends TextComponentEditorAction {
                 if (hasSelection) {
                     int startLine = doc.getLineNumber(editor.getSelectionModel().getSelectionStart());
                     int endLine = doc.getLineNumber(editor.getSelectionModel().getSelectionEnd());
-                    highlightHandler(editor,startLine,endLine);
+                    highlightHandler(editor, startLine, endLine);
                 } else {
-                    highlightHandler(editor, 0, editor.getDocument().getLineCount()-1);
+                    highlightHandler(editor, 0, editor.getDocument().getLineCount() - 1);
                 }
             } catch (Exception e) {
                 Messages.showErrorDialog("发生了未知错误", "错误");
@@ -95,7 +95,10 @@ public class HighlightAction extends TextComponentEditorAction {
             for (String temp : words) {
                 temp = temp.toLowerCase();
                 WordRanges wordRanges = new WordRanges();
-                if (StringUtils.isNotBlank(temp) && countWords(temp, words) > 1
+                if (StringUtils.isNotBlank(temp) //过滤产生的空字符串
+                        && temp.length() > 1 //过滤单字母重复，无意义
+                        && countWords(temp, words) > 1 //过滤只出现过一次的单词
+                        //过滤已经染色的单词
                         && !wordRangesList.stream().map(WordRanges::getWord).collect(Collectors.toList()).contains(temp)) {
                     List<Range> rangeList = new ArrayList<>();
                     while (backup2.contains(temp)) {
