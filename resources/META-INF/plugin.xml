@@ -35,11 +35,6 @@
               text="Count Lines"
               description="Count selected lines or whole file if selection is empty">
       </action>
-      <action id="lines.highlight"
-              class="org.b3log.zephyr.action.HighlightAction"
-              text="Hightlight Lines"
-              description="Count selected lines or whole file if selection is empty">
-      </action>
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </group>
   </actions>
